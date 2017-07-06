@@ -90,10 +90,14 @@ class FileEntityBrowser extends WidgetBase {
    * {@inheritdoc}
    */
   protected function prepareEntities(array $form, FormStateInterface $form_state) {
+    /** @var \Drupal\file\FileInterface $file */
     $file = $this->entityTypeManager->getStorage('file')->create([
       'uri' => $form_state->getValue('url'),
       'uid' => $this->currentUser->id(),
     ]);
+
+    $file->setPermanent();
+
     return [$file];
   }
 
@@ -104,7 +108,6 @@ class FileEntityBrowser extends WidgetBase {
     if (!empty($form_state->getTriggeringElement()['#eb_widget_main_submit'])) {
       $files = $this->prepareEntities($form, $form_state);
       foreach ($files as $file) {
-        $file->setPermanent();
         $file->save();
       }
       $this->selectEntities($files, $form_state);
